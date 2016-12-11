@@ -28,8 +28,17 @@ public class SearchController {
     public Object search(@RequestParam("q") String q) {
     	Map<String, Object> headers = new HashMap<String, Object>();
     	
-    	headers.put("CamelTwitterCount", 10);
-    	headers.put("CamelTwitterKeywords", q);
+    	/**
+    	 * if query contains a " max " command with before and after 
+    	 * space, the keywords and the limit are cut and taken.
+    	 */
+    	if (q.contains(" max ")) {
+    		String[] qy = q.split(" max ");
+    		headers.put("CamelTwitterCount", qy[1]);
+        	headers.put("CamelTwitterKeywords", qy[0]);
+		} else {
+	    	headers.put("CamelTwitterKeywords", q);
+		}
     	
     	return producerTemplate.requestBodyAndHeaders("direct:search", "", headers);
     }
